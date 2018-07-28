@@ -34,8 +34,8 @@
 # };
 
 import sys
-import argparse
 import os
+import argparse
 
 INPUT_FILE = "boot.img"
 KERNEL_FILE_NAME = "zImage"
@@ -82,6 +82,23 @@ class IOFile:
         else:
             return stream
 
+    def read_uint(self, string=None):
+        s = self.read(self.UNSIGNED_INT_SIZE, string)
+        result = self.get_unsigned_int(s)
+        if string:
+            if "size" in string:
+                print("{0}: {1} -> {2}k/{3}m".format(string, result, result // 1024, result // (1024 * 1024)))
+            else:
+                print("{0}: {1}".format(string, result))
+        return result
+    
+    def get_unsigned_int(self, number_s):
+        # "Convert some bytes to an unsigned int"
+        # number_s = number_s[::-1]
+        # number_s = number_s.encode('hex')
+        uint = int.from_bytes(number_s, byteorder = sys.byteorder, signed = False)
+        return uint
+
     def seek(self, nBytes, pos):
         try:
             self.file.seek(nBytes, pos)
@@ -109,19 +126,6 @@ class IOFile:
 
             print("File {0} written (length={1}).".format(file_name, file_size))
 
-    def get_unsigned_int(self, number_s):
-        "Convert some bytes to an unsigned int"
-        number_s = number_s[::-1]
-        number_s = number_s.encode('hex')
-        return int(number_s, 16)
-
-    def read_uint(self, string=None):
-        s = self.read(self.UNSIGNED_INT_SIZE, string)
-        result = self.get_unsigned_int(s)
-        if string:
-            print("{0}: {1}".format(string, result))
-        return result
-
 
 def main():
 
@@ -131,9 +135,8 @@ def main():
                         help="increase output verbosity")
     parser.add_argument("-i", "--input_file", default=INPUT_FILE,
                         help="boot image input file")
-    help_o = "write kernel, ramdisk, etc in this output directory"
     parser.add_argument("-o", "--output_dir", default=".",
-                        help=help_o)
+                        help="write kernel, ramdisk, etc in this output directory")
     args = parser.parse_args()
 
     in_file_name = args.input_file
@@ -161,7 +164,8 @@ def main():
 
     hdr = BootImgHdr()
 
-    hdr.boot_magic = in_file.read(hdr.MAGIC_SIZE, "boot magic")
+    hdr.boot_magic = in_file.read(hdr.MAGIC_SIZE, "boot magic").decode()
+
     if hdr.boot_magic == hdr.MAGIC:
         if verb:
             print("boot_magic correct: ", hdr.boot_magic)
