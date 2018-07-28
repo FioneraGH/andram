@@ -277,7 +277,7 @@ def main():
 
     # Download second file if available
     if hdr.second_size != 0:
-        second_page = ((hdr.second_size + hdr.page_size - 1) // hdr.page_size + ramdisk_page)
+        second_page = ((hdr.ramdisk_size + hdr.page_size - 1) // hdr.page_size + ramdisk_page)
         in_file.write(second_file_name, second_page * hdr.page_size, hdr.second_size)
 
 if __name__ == "__main__":
