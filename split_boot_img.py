@@ -268,21 +268,17 @@ def main():
 
     # Download kernel
     kernel_page = 1
-    in_file.write(kernel_file_name, kernel_page * hdr.page_size,
-                  hdr.kernel_size)
+    in_file.write(kernel_file_name, kernel_page * hdr.page_size, hdr.kernel_size)
 
     # Download ramdisk
-    ramdisk_page = ((hdr.kernel_size + hdr.page_size - 1) / hdr.page_size +
-                    kernel_page)
-    in_file.write(ramdisk_file_name, ramdisk_page * hdr.page_size,
-                  hdr.ramdisk_size)
+    ramdisk_page = ((hdr.kernel_size + hdr.page_size - 1) // hdr.page_size + kernel_page)
+    print("ramdisk_page to write: {0}".format(ramdisk_page))
+    in_file.write(ramdisk_file_name, ramdisk_page * hdr.page_size, hdr.ramdisk_size)
 
     # Download second file if available
     if hdr.second_size != 0:
-        second_page = ((hdr.second_size + hdr.page_size - 1) / hdr.page_size +
-                       ramdisk_page)
-        in_file.write(second_file_name, second_page * hdr.page_size,
-                      hdr.second_size)
+        second_page = ((hdr.second_size + hdr.page_size - 1) // hdr.page_size + ramdisk_page)
+        in_file.write(second_file_name, second_page * hdr.page_size, hdr.second_size)
 
 if __name__ == "__main__":
     main()
