@@ -2,7 +2,9 @@
 
 ## Brief
 
-The main purpose of this project is to maintain a script file named split_boot_img.py. Its a python script with version 2.
+The main purpose of this project is to maintain a script file named split_boot_img.py.
+Its a python script with version 2 before, now it is on version 3.
+Test passed with python 3.7.0.
 
 ## Now Situation
 
