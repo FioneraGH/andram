@@ -233,11 +233,11 @@ def main():
     # Read asciiz product name.
     #unsigned char name[BOOT_NAME_SIZE]; /* asciiz product name */
     hdr.product_name = in_file.read(hdr.NAME_SIZE, "product name")
-    print("product name: ", hdr.product_name.rstrip("\0"))
+    print("product name: ", hdr.product_name.rstrip(b"\0"))
 
     # Read cmdline.
     hdr.cmdline = in_file.read(hdr.ARGS_SIZE, "cmdline")
-    print("cmdline: ", hdr.cmdline.rstrip("\0"))
+    print("cmdline: ", hdr.cmdline.rstrip(b"\0"))
 
     # /*
     # ** +-----------------+
