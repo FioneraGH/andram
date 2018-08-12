@@ -87,16 +87,17 @@ class IOFile:
         result = self.get_unsigned_int(s)
         if string:
             if "size" in string:
-                print("{0}: {1} -> {2}k/{3}m".format(string, result, result // 1024, result // (1024 * 1024)))
+                print("{0}: {1} -> {2}k/{3}m".format(string, result,
+                                                     result // 1024, result // (1024 * 1024)))
             else:
                 print("{0}: {1}".format(string, result))
         return result
-    
+
     def get_unsigned_int(self, number_s):
         # "Convert some bytes to an unsigned int"
         # number_s = number_s[::-1]
         # number_s = number_s.encode('hex')
-        uint = int.from_bytes(number_s, byteorder = sys.byteorder, signed = False)
+        uint = int.from_bytes(number_s, byteorder=sys.byteorder, signed=False)
         return uint
 
     def seek(self, nBytes, pos):
@@ -124,7 +125,8 @@ class IOFile:
                 self.close()
                 sys.exit(1)
 
-            print("File {0} written (length={1}).".format(file_name, file_size))
+            print("File {0} written (length={1}).".format(
+                file_name, file_size))
 
 
 def main():
@@ -198,8 +200,8 @@ def main():
         hdr.ramdisk_addr = in_file.read_uint()
     base = hdr.ramdisk_addr - hdr.BASE_RAMDISK_ADDR
     if base != hdr.base:
-        print ("ERROR: Base from ramdisk address does not match"
-               " the one from kernel address. {0}".format(base))
+        print("ERROR: Base from ramdisk address does not match"
+              " the one from kernel address. {0}".format(base))
 
     # Read second size
     hdr.second_size = in_file.read_uint("second size")
@@ -211,8 +213,8 @@ def main():
         hdr.second_addr = in_file.read_uint()
     base = hdr.second_addr - hdr.BASE_SECOND_ADDR
     if base != hdr.base:
-        print ("ERROR: Base from second address does not match"
-               " the one from kernel address. {0}".format(base))
+        print("ERROR: Base from second address does not match"
+              " the one from kernel address. {0}".format(base))
 
     # Read tags address
     if verb:
@@ -221,8 +223,8 @@ def main():
         hdr.tags_addr = in_file.read_uint()
     base = hdr.tags_addr - hdr.BASE_TAGS_ADDR
     if base != hdr.base:
-        print ("ERROR: Base from tags address does not match"
-               " the one from kernel address. {0}".format(base))
+        print("ERROR: Base from tags address does not match"
+              " the one from kernel address. {0}".format(base))
 
     # Read page size
     hdr.page_size = in_file.read_uint("page size")
@@ -231,7 +233,7 @@ def main():
     in_file.seek(in_file.UNSIGNED_INT_SIZE * 2, 1)
 
     # Read asciiz product name.
-    #unsigned char name[BOOT_NAME_SIZE]; /* asciiz product name */
+    # unsigned char name[BOOT_NAME_SIZE]; /* asciiz product name */
     hdr.product_name = in_file.read(hdr.NAME_SIZE, "product name")
     print("product name: ", hdr.product_name.rstrip(b"\0"))
 
@@ -268,17 +270,23 @@ def main():
 
     # Download kernel
     kernel_page = 1
-    in_file.write(kernel_file_name, kernel_page * hdr.page_size, hdr.kernel_size)
+    in_file.write(kernel_file_name, kernel_page *
+                  hdr.page_size, hdr.kernel_size)
 
     # Download ramdisk
-    ramdisk_page = ((hdr.kernel_size + hdr.page_size - 1) // hdr.page_size + kernel_page)
+    ramdisk_page = ((hdr.kernel_size + hdr.page_size - 1) //
+                    hdr.page_size + kernel_page)
     print("ramdisk_page to write: {0}".format(ramdisk_page))
-    in_file.write(ramdisk_file_name, ramdisk_page * hdr.page_size, hdr.ramdisk_size)
+    in_file.write(ramdisk_file_name, ramdisk_page *
+                  hdr.page_size, hdr.ramdisk_size)
 
     # Download second file if available
     if hdr.second_size != 0:
-        second_page = ((hdr.ramdisk_size + hdr.page_size - 1) // hdr.page_size + ramdisk_page)
-        in_file.write(second_file_name, second_page * hdr.page_size, hdr.second_size)
+        second_page = ((hdr.ramdisk_size + hdr.page_size - 1) //
+                       hdr.page_size + ramdisk_page)
+        in_file.write(second_file_name, second_page *
+                      hdr.page_size, hdr.second_size)
+
 
 if __name__ == "__main__":
     main()
